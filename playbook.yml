@@ -1,3 +1,9 @@
 ---
 - hosts: all
   become: yes
+
+  tasks:
+
+    - name: Update the Repositories 
+      apt: 
+        update_cache: yes
