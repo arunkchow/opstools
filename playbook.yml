@@ -1,9 +1,26 @@
 ---
 - hosts: all
   become: yes
+  vars_files:
+  - ./vars.yml
 
   tasks:
+
+    - name: Install Python Pycurl
+      apt:
+        name: python-pycurl
+        state: latest  
+
+    - name: Install the Nginx Repository 
+      apt_repository:
+        repo: "ppa:nginx/stable"
+        state: present
 
     - name: Update the Repositories 
       apt: 
         update_cache: yes
+     
+    - name: Install Nginx
+      apt:
+        name: nginx 
+        state: latest
