@@ -21,10 +21,6 @@
         state: present
         key: http://pkg.jenkins-ci.org/redhat-stable/jenkins-ci.org.key
 
-#    - name: Update the Repositories 
-#      yum: 
-#        update_cache: yes
-
     - name: Install Java
       yum:
         update_cache: yes
@@ -40,3 +36,43 @@
       yum:
         name: nginx 
         state: latest
+
+    - name: Configure Nginx to host Jenkins
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+
+    - name: Start Jenkins Service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Start Nginx Service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Enable and Start Firewall
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Open Port for Jenkins
+      firewalld:
+         zone: public
+         port: 8080/tcp
+         permanent: true
+         state: enabled
+
+    - name: Open Port for Nginx
+      firewalld:
+         zone: public
+         service: http
+         permanent: true
+         state: enabled
+        
+
+
