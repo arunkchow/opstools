@@ -73,6 +73,9 @@
          service: http
          permanent: true
          state: enabled
-        
 
-
+    - name: Reload Firewall
+      service:
+        name: firewalld
+        state: reloaded
+        enabled: yes
