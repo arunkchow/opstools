@@ -1,0 +1,32 @@
+Vagrant.configure("2") do |config|
+
+  # Vagrant 1st Machine Code Block Start
+  config.vm.box = "<Vagrant_Image_Name>"
+  config.vm.hostname = "<Vagrant_Guest_Hostname>"
+  config.vm.define :<Vagrant_Name> do |t|
+  end
+  
+
+  config.vm.network "private_network", ip: "<Desired IP>"
+  
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+  # Vagrant 1st Machine Code Block End
+
+  # Vagrant 2nd Machine Code Block Start
+  config.vm.box = "<Vagrant_Image_Name>"
+  config.vm.hostname = "<Vagrant_Guest_Hostname>"
+  config.vm.define :<Vagrant_Name> do |t|
+  end
+  
+  config.vm.network "private_network", ip: "<Desired IP>"
+  
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+
+  # Vagrant 2nd Machine Code Block End
+
+end
+
