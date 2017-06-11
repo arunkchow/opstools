@@ -6,7 +6,7 @@
 
   tasks:
 
-    - name: Install Epel-Releas
+    - name: Install Epel-Release
       yum:
         name: epel-release
         state: latest
@@ -16,15 +16,19 @@
         url: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
         dest: /etc/yum.repos.d/jenkins.repo
 
-    - name: Add Jenkins repo GPG key.
+    - name: Add Jenkins repo GPG key
       rpm_key:
         state: present
         key: http://pkg.jenkins-ci.org/redhat-stable/jenkins-ci.org.key
 
     - name: Install Java
       yum:
-        update_cache: yes
         name: java-1.8.0-openjdk.x86_64
+        state: latest
+
+    - name: Install Python LibSEManage
+      yum:
+        name: libsemanage-python
         state: latest
 
     - name: Install Jenkins
@@ -36,6 +40,12 @@
       yum:
         name: nginx 
         state: latest
+
+    - name: SELinux seboolean for HTTPD (Nginx)
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
 
     - name: Configure Nginx to host Jenkins
       template:
