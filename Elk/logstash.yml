@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+  - ./vars.yml
+
+  tasks:
+
+    - name: Install Epel-Release
+      yum:
+        name: epel-release
+        state: latest
+
+    - name: Install Logstash
+      yum:
+        name: https://artifacts.elastic.co/downloads/logstash/logstash-5.1.1.rpm
+        state: present
+
+    - name: Install Python-pyOpenSSL
+      yum:
+        name: python-pyOpenSSL
+        state: latest
+
+    - name: Add Logstash Repo GPG key
+      rpm_key:
+        state: present
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch

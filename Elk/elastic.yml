@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+  - ./vars.yml
+
+  tasks:
+
+    - name: Install Epel-Release
+      yum:
+        name: epel-release
+        state: latest
+
+    - name: Install Java
+      yum:
+        name: java-1.8.0-openjdk.x86_64
+        state: latest
+
+    - name: Add Elastic Search Repo GPG key
+      rpm_key:
+        state: present
+        key: http://packages.elastic.co/GPG-KEY-elasticsearch
+
+    - name: Install Elastic Search
+      yum:
+        name: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.0.2.rpm
+        state: present
+
+    - name: Start Elastic Search Service
+      service:
+        name: elasticsearch
+        state: started
+        enabled: yes

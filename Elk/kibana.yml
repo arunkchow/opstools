@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+  - ./vars.yml
+
+  tasks:
+
+    - name: Install Epel-Release
+      yum:
+        name: epel-release
+        state: latest
+
+    - name: Configure Kibana Repo
+      get_url:
+        url: http://packages.elastic.co/kibana/4.5/centos
+        dest: /etc/yum.repos.d/kibana.repo
+
+    - name: Add Kibana Repo GPG key
+      rpm_key:
+        state: present
+        key: http://packages.elastic.co/GPG-KEY-elasticsearch
+
+#    - name: Install Java
+#      yum:
+#        name: java-1.8.0-openjdk.x86_64
+#        state: latest
+
+    - name: Install Logstash
+      yum:
+        name: kibana
+        state: latest
