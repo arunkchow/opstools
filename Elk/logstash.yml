@@ -11,17 +11,51 @@
         name: epel-release
         state: latest
 
+    - name: Install Java
+      yum:
+        name: java-1.8.0-openjdk.x86_64
+        state: latest
+
+    - name: Install net-tools
+      yum:
+        name: net-tools
+        state: latest
+
     - name: Install Logstash
       yum:
         name: https://artifacts.elastic.co/downloads/logstash/logstash-5.1.1.rpm
         state: present
 
-    - name: Install Python-pyOpenSSL
-      yum:
-        name: python-pyOpenSSL
-        state: latest
-
     - name: Add Logstash Repo GPG key
       rpm_key:
         state: present
         key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+    - name: Enter Logstash Server IP in OpenSSL Configuration File
+      template:
+        src: openssl.cnf.j2
+        dest: /etc/pki/tls/openssl.cnf
+
+    - name: Verify Logstash Certificate File Status
+      stat:
+        path=/etc/pki/tls/certs/logstash-forwarder.crt
+      register: logstash_crt
+
+    - name: Create Logstash Certificate File
+      command: /bin/openssl req -config /etc/pki/tls/openssl.cnf -x509 -days 3650 -batch -nodes -newkey rsa:2048 -keyout /etc/pki/tls/private/logstash-forwarder.key -out /etc/pki/tls/certs/logstash-forwarder.crt
+      when: logstash_crt.stat.exists == False
+
+    - name: Copy Logstash Configuration Files
+      copy:
+        src: "{{ item }}"
+        dest: /etc/logstash/conf.d/"{{ item }}"
+      with_items:
+        - filebeat-input.conf
+        - output-elasticsearch.conf
+        - syslog-filter.conf
+
+    - name: Start Logstash Service
+      service:
+        name: logstash
+        state: started
+        enabled: yes

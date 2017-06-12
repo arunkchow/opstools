@@ -16,6 +16,11 @@
         name: java-1.8.0-openjdk.x86_64
         state: latest
 
+    - name: Install net-tools
+      yum:
+        name: net-tools
+        state: latest
+
     - name: Add Elastic Search Repo GPG key
       rpm_key:
         state: present
@@ -25,6 +30,23 @@
       yum:
         name: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.0.2.rpm
         state: present
+
+    - name: Configure ElasticSearch Settings
+      template:
+        src: elasticsearch.yml.j2
+        dest: /etc/elasticsearch/elasticsearch.yml
+
+    - name: Remove Memory Lock Limit - I
+      lineinfile:
+        dest: /usr/lib/systemd/system/elasticsearch.service
+        regexp: '^#LimitMEMLOCK='
+        line: 'LimitMEMLOCK=infinity'
+
+    - name: Remove Memory Lock Limit - II
+      lineinfile:
+        dest: /etc/sysconfig/elasticsearch
+        regexp: '^#MAX_LOCKED_MEMORY'
+        line: 'MAX_LOCKED_MEMORY=unlimited'
 
     - name: Start Elastic Search Service
       service:
