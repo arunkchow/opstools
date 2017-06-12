@@ -37,9 +37,7 @@
       register: filebeat_crt
 
     - name: Transfer Logforward Cert from Logstash to Filebeat
-      copy:
-        src: /Cert/logstash-forwarder.crt
-        dest: /etc/pki/tls/certs/
+      command: /bin/cp /Cert/logstash-forwarder.crt /etc/pki/tls/certs/
       when: filebeat_crt.stat.exists == False
 
     - name: Remove Logstash Cert File
