@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  gather_facts: no
   become: yes
   vars_files:
   - ./vars.yml
@@ -35,16 +36,14 @@
         path=/etc/pki/tls/certs/logstash-forwarder.crt
       register: filebeat_crt
 
-    - name: Verify Cert Staged
-      stat:
-        path=/vagrant/logstash-forwarder.crt
-      register: filebeat_stg
-
-    - name: Copy Logstash Certificate
+    - name: Transfer Logforward Cert from Logstash to Filebeat
       copy:
-          src: /vagrant/logstash-forwarder.crt
-          dest: /etc/pki/tls/certs/logstash-forwarder.crt
-      when: filebeat_crt.stat.exists == False and filebeat_stg.stat.exists == True
+        src: /Cert/logstash-forwarder.crt
+        dest: /etc/pki/tls/certs/
+      when: filebeat_crt.stat.exists == False
+
+    - name: Remove Logstash Cert File
+      command: /bin/rm -rf /Cert/logstash-forwarder.crt
 
     - name: Start Filebeat Service
       service:

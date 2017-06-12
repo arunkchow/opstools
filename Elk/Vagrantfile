@@ -20,8 +20,10 @@ Vagrant.configure("2") do |config|
   config.vm.define :logstash do |logstash_config|
   logstash_config.vm.hostname = "logstash.devops.local"
   logstash_config.vm.network "private_network", ip: "192.168.50.51"
+  logstash_config.vm.synced_folder "Cert/", "/Cert"
   logstash_config.vm.provision "ansible" do |ansible_logstash|
     ansible_logstash.playbook = "logstash.yml"
+
   end
   end
 
@@ -42,6 +44,7 @@ Vagrant.configure("2") do |config|
   config.vm.define :filebeat1 do |filebeat1_config|
   filebeat1_config.vm.hostname = "filebeat1.devops.local"
   filebeat1_config.vm.network "private_network", ip: "192.168.50.53"
+  filebeat1_config.vm.synced_folder "Cert/", "/Cert"
   filebeat1_config.vm.provision "ansible" do |ansible_filebeat1|
     ansible_filebeat1.playbook = "filebeat1.yml"
   end
