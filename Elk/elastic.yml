@@ -28,7 +28,7 @@
 
     - name: Install Elastic Search
       yum:
-        name: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.0.2.rpm
+        name: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.rpm
         state: present
 
     - name: Configure ElasticSearch Settings

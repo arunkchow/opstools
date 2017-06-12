@@ -1,0 +1,53 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+  - ./vars.yml
+
+  tasks:
+
+    - name: Add Filebeat Repo GPG key
+      rpm_key:
+        state: present
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+    - name: Install Filebeat
+      yum:
+        name: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.1.1-x86_64.rpm
+        state: present
+
+    - name: Make changes to Filebeat Config
+      template:
+        src: filebeat.yml.j2
+        dest: /etc/filebeat/filebeat.yml
+
+    - name: Verify Certs Path exists
+      stat:
+        path=/etc/pki/tls/certs/
+      register: filebeat_crtpath
+
+    - name: Create Certs Dir for Filebeat
+      command: /bin/mkdir -p /etc/pki/tls/certs/
+      when: filebeat_crtpath.stat.exists == False
+
+    - name: Verify Certs exists
+      stat:
+        path=/etc/pki/tls/certs/logstash-forwarder.crt
+      register: filebeat_crt
+
+    - name: Verify Cert Staged
+      stat:
+        path=/vagrant/logstash-forwarder.crt
+      register: filebeat_stg
+
+    - name: Copy Logstash Certificate
+      copy:
+          src: /vagrant/logstash-forwarder.crt
+          dest: /etc/pki/tls/certs/logstash-forwarder.crt
+      when: filebeat_crt.stat.exists == False and filebeat_stg.stat.exists == True
+
+    - name: Start Filebeat Service
+      service:
+        name: filebeat
+        state: started
+        enabled: yes

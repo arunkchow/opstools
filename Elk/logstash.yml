@@ -45,10 +45,21 @@
       command: /bin/openssl req -config /etc/pki/tls/openssl.cnf -x509 -days 3650 -batch -nodes -newkey rsa:2048 -keyout /etc/pki/tls/private/logstash-forwarder.key -out /etc/pki/tls/certs/logstash-forwarder.crt
       when: logstash_crt.stat.exists == False
 
+    - name: Verify Logstash Certificate staged for copying to Filebeat
+      stat:
+        path=/vagrant/logstash-forwarder.crt
+      register: logstash_stg
+
+    - name: Stage Logstash Certificate for Filebeat
+      copy:
+          src: /etc/pki/tls/certs/logstash-forwarder.crt
+          dest: /vagrant/logstash-forwarder.crt
+      when: logstash_stg.stat.exists == False
+
     - name: Copy Logstash Configuration Files
       copy:
         src: "{{ item }}"
-        dest: /etc/logstash/conf.d/"{{ item }}"
+        dest: /etc/logstash/conf.d/
       with_items:
         - filebeat-input.conf
         - output-elasticsearch.conf
