@@ -40,8 +40,16 @@
       command: /bin/cp /Cert/logstash-forwarder.crt /etc/pki/tls/certs/
       when: filebeat_crt.stat.exists == False
 
+    - name: Verify Certs exists
+      stat:
+        path=/etc/pki/tls/certs/logstash-forwarder.crt
+      register: filebeat_crt2
+
     - name: Remove Logstash Cert File
-      command: /bin/rm -rf /Cert/logstash-forwarder.crt
+      file:
+        path: /Cert/logstash-forwarder.crt
+        state: absent
+      when: filebeat_crt2.stat.exists == True
 
     - name: Start Filebeat Service
       service:

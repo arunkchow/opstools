@@ -19,11 +19,13 @@ filebeat.prospectors:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
+    - /var/log/auth.log
+    - /var/log/syslog
     - /var/log/secure
     - /var/log/messages
 
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
-    document-type: syslog
+document-type: syslog
   # matching any regular expression from the list.
   #exclude_lines: ["^DBG"]
 
@@ -79,7 +81,7 @@ filebeat.prospectors:
 # Multiple outputs may be used.
 
 #-------------------------- Elasticsearch output ------------------------------
-output.elasticsearch:
+#output.elasticsearch:
   # Array of hosts to connect to.
   #hosts: ["localhost:9200"]
 
@@ -89,7 +91,7 @@ output.elasticsearch:
   #password: "changeme"
 
 #----------------------------- Logstash output --------------------------------
-#output.logstash:
+output.logstash:
   # The Logstash hosts
   hosts: ["192.168.50.51:5443"]
   bulk_max_size: 1024
@@ -97,7 +99,7 @@ output.elasticsearch:
   template.name: "filebeat"
   template.path: "filebeat.template.json"
   template.overwrite: false
-  
+
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
   #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
