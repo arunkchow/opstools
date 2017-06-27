@@ -1,0 +1,11 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "arunkchow/centos7"
+  config.vm.define :centos7 do |centos7_config|
+  centos7_config.vm.hostname = "centos7.local"
+  centos7_config.vm.network "private_network", ip: "172.10.10.10"
+  centos7_config.vm.synced_folder "link/", "/link"
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+     ansible-playbook -i "localhost," -c local /vagrant/provision.yml
+  SHELL
+end

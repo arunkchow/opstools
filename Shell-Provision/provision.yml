@@ -1,0 +1,42 @@
+---
+- hosts: all
+  gather_facts: no
+  become: yes
+  
+  tasks:
+
+    - name: Install net-tools
+      yum:
+        name: net-tools
+        state: latest
+
+    - name: Install Python LibSEManage
+      yum:
+        name: libsemanage-python
+        state: latest
+
+    - name: Install Nginx
+      yum:
+        name: nginx 
+        state: latest
+
+    - name: SELinux seboolean for HTTPD (Nginx)
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+        
+    - name: Install Git
+      yum:
+        name: git
+        state: latest
+        
+    - name: Install Wget
+      yum:
+        name: wget
+        state: latest
+        
+    - name: Install Curl
+      yum:
+        name: curl
+        state: latest
